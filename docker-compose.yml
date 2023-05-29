@@ -1,0 +1,53 @@
+version: '3.5'
+
+services:
+
+  discovery-server-service:
+    image: aviasales-eureka-server:latest
+    build: eureka_server
+    container_name: discovery-server-service
+    ports:
+      - "8761:8761"
+    healthcheck:
+      test: [ "CMD", "curl", "-I", "http://localhost:8761" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  gateway-service:
+    image: aviasales-gateway-service:latest
+    build: gateway_service
+    container_name: gateway-service
+    ports:
+      - "8080:8080"
+    environment:
+      EUREKA_URL: http://discovery-server-service:8761/eureka/
+    depends_on:
+      discovery-server-service:
+        condition: service_healthy
+
+  users-service:
+    image: aviasales-user-service:latest
+    container_name: users-service
+    depends_on:
+      discovery-server-service:
+        condition: service_healthy
+      users-database:
+        condition: service_started
+    build: user-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://users-database:5432/users_db
+      SPRING_DATASOURCE_USERNAME: users
+      SPRING_DATASOURCE_PASSWORD: password
+      eureka.client.serviceUrl.defaultZone: http://discovery-server-service:8761/eureka/
+
+  users-database:
+    container_name: users-database
+    image: postgres
+    environment:
+      POSTGRES_USER: users
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: users_db
+    ports:
+      - "5432:5432"
+    restart: unless-stopped

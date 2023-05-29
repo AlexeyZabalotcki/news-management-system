@@ -1,0 +1,5 @@
+rootProject.name = 'Aviasales_05.2023_1'
+
+include 'user-service'
+include 'eureka_server'
+include 'gateway_service'
