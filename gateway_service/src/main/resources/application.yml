@@ -1,0 +1,41 @@
+server:
+  port: 8080
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL}
+
+spring:
+  application:
+    name: gateway-service
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: auth
+          uri: ${service-lb-urls.users}
+          predicates:
+            - Path=/authenticate/**
+          filters:
+            - RewritePath=/authenticate(?<remaining>.*), /api/v1/auth${remaining}
+        - id: pass
+          uri: ${service-lb-urls.users}
+          predicates:
+            - Path=/password/**
+          filters:
+            - RewritePath=/password(?<remaining>.*), /api/v1/password${remaining}
+        - id: users
+          uri: ${service-lb-urls.users}
+          predicates:
+            - Path=/users/**
+          filters:
+            - RewritePath=/users(?<remaining>.*), /api/v1/users${remaining}
+
+
+service-lb-urls:
+  users: lb://user-ms
+
