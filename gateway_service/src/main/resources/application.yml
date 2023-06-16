@@ -34,8 +34,27 @@ spring:
             - Path=/users/**
           filters:
             - RewritePath=/users(?<remaining>.*), /api/v1/users${remaining}
+        - id: news
+          uri: ${service-lb-urls.news}
+          predicates:
+            - Path=/news/**
+          filters:
+            - RewritePath=/news(?<remaining>.*), /api/v1/news${remaining}
+        - id: news
+          uri: ${service-lb-urls.news}
+          predicates:
+            - Path=/comment/**
+          filters:
+            - RewritePath=/comment(?<remaining>.*), /api/v1/comment${remaining}
+        - id: news
+          uri: ${service-lb-urls.news}
+          predicates:
+            - Path=/full/**
+          filters:
+            - RewritePath=/full(?<remaining>.*), /api/v1/full${remaining}
 
 
 service-lb-urls:
-  users: lb://user-ms
+  users: lb://user-service
+  news: lb://news-system
 

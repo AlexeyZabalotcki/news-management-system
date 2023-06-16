@@ -8,7 +8,7 @@ RUN gradle build
 # Run stage
 FROM openjdk:17-oracle
 ENV APP_HOME=/app/
-ENV ARTIFACT_NAME=user-service-0.0.1-SNAPSHOT.jar
+ENV ARTIFACT_NAME=news-system-0.0.1-SNAPSHOT.jar
 ARG JAR_FILE=$APP_HOME/build/libs/$ARTIFACT_NAME
-COPY --from=build $JAR_FILE /opt/user-service/app.jar
-ENTRYPOINT ["java", "-jar", "/opt/user-service/app.jar"]
+COPY --from=build $JAR_FILE /opt/news-system/app.jar
+ENTRYPOINT ["java", "-jar", "/opt/news-system/app.jar"]

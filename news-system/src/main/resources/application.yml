@@ -2,12 +2,14 @@ server:
   port: 0
 spring:
   application:
-    name: user-service
+    name: news-system
+  profiles:
+    active: dev
   datasource:
     driver-class-name: org.postgresql.Driver
-    username: users
+    username: news
     password: password
-    url: jdbc:postgresql://user-ms-postgres:5432/users_db
+    url: jdbc:postgresql://news-database:5432/news_db
   jpa:
     hibernate:
       ddl-auto: none
@@ -19,6 +21,10 @@ spring:
   liquibase:
     change-log: db/changelog/db.changelog-master.yaml
     enabled: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 eureka:
   instance:
@@ -27,6 +33,6 @@ eureka:
     service-url:
       defaultZone: ${EUREKA_URL}
 
-security:
-  jwt:
-    secret: 2F413F4428472B4B61645367566B5970337336763979244226452948404D6351
+cache:
+  type: LRU
+  capacity: 10
