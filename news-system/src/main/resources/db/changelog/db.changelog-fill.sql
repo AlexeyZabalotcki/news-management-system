@@ -89,7 +89,7 @@ INSERT INTO comments (time, text, username, news_id)
         'User ' || (i % 5 + 1),
         news.id
     FROM
-        generate_series(1, 200) AS i,
+        generate_series(1, 20) AS i,
         news
     WHERE
         i % 10 <> 0;

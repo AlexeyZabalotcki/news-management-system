@@ -22,12 +22,6 @@ spring:
             - Path=/authenticate/**
           filters:
             - RewritePath=/authenticate(?<remaining>.*), /api/v1/auth${remaining}
-        - id: pass
-          uri: ${service-lb-urls.users}
-          predicates:
-            - Path=/password/**
-          filters:
-            - RewritePath=/password(?<remaining>.*), /api/v1/password${remaining}
         - id: users
           uri: ${service-lb-urls.users}
           predicates:
@@ -57,4 +51,8 @@ spring:
 service-lb-urls:
   users: lb://user-service
   news: lb://news-system
+
+security:
+  jwt:
+    secret: ${JWT_SECRET:2F413F4428472B4B61645367566B5970337336763979244226452948404D6351}
 
