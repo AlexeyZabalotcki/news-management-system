@@ -5,9 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.news_service.aop.annotation.Logging;
@@ -15,70 +12,37 @@ import ru.clevertec.news_service.dao.CommentRepository;
 import ru.clevertec.news_service.dao.NewsRepository;
 import ru.clevertec.news_service.dto.AddNewsDto;
 import ru.clevertec.news_service.dto.NewsDto;
-import ru.clevertec.news_service.dto.NewsPageDto;
 import ru.clevertec.news_service.mapper.NewsMapper;
 import ru.clevertec.news_service.model.News;
-import ru.clevertec.news_service.service.NewsService;
+import ru.clevertec.news_service.service.JournalistNewsService;
+import ru.clevertec.news_service.util.CommunicationService;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class NewsServiceImpl implements NewsService {
+public class JournalistNewsServiceImpl implements JournalistNewsService {
 
+    private final CommunicationService communicationService;
     private final NewsRepository newsRepository;
     private final CommentRepository commentRepository;
     private final NewsMapper newsMapper;
-
-    @Override
-    public List<News> findAllByKeyword(String keyword) {
-        String findWord = "%" + keyword + "%";
-        return newsRepository.findAllByWordParts(findWord);    }
-
-    @Override
-    public NewsPageDto findPageByKeyword(String keyword, Pageable pageable) {
-        String findWord = "%" + keyword + "%";
-        Page<News> page = newsRepository.findAllByWordParts(findWord, pageable);
-        return newsMapper.toNewsDto(page);
-    }
-
-    @Override
-    public List<NewsDto> findAll() {
-        return newsRepository.findAll().stream()
-                .map(newsMapper::toDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public NewsPageDto findPage(Pageable pageable) {
-        Page<News> page = newsRepository.findAll(pageable);
-        return newsMapper.toNewsDto(page);
-    }
-
-    @Logging
-    @Override
-    @Cacheable(value = "news", key = "#id")
-    public NewsDto findById(Long id) {
-        News news = newsRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Check news id " + id));
-        return newsMapper.toDto(news);
-    }
 
     @Logging
     @Override
     @Transactional
     @CachePut(value = "news", key = "#result.id")
-    public NewsDto add(AddNewsDto news) {
+    public NewsDto add(AddNewsDto news, String authorization) {
+        String journalistUsername = communicationService.getUsernameFromToken(authorization);
         NewsDto createNews = NewsDto.builder()
                 .title(news.getTitle())
                 .text(news.getText())
-                .username(news.getUsername())
+                .username(journalistUsername)
                 .time(LocalDateTime.now())
                 .build();
         News saved = newsRepository.save(newsMapper.toEntity(createNews));
@@ -89,8 +53,10 @@ public class NewsServiceImpl implements NewsService {
     @Override
     @Transactional
     @CachePut(value = "news", key = "#result.id")
-    public NewsDto update(Long id, AddNewsDto updated) {
-        News forUpdate = newsRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Check news id " + id));
+    public NewsDto update(Long id, AddNewsDto updated, String authorization) {
+
+        String username = updated.getUsername();
+        News forUpdate = getNewsAndCheckUser(id, username, authorization);
 
         try {
             Map<String, String> map = newsToMap(updated);
@@ -129,10 +95,25 @@ public class NewsServiceImpl implements NewsService {
     @Override
     @Transactional
     @CacheEvict(value = "news", key = "#id")
-    public void deleteById(Long id) {
-        newsRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Check if news with this id exists"));
-        commentRepository.deleteAllByNewsId(id);
+    public void deleteById(Long id, String authorization) {
+        News news = newsRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Check if news with this id exists"));
+        News newsAndCheckUser = getNewsAndCheckUser(id, news.getUsername(), authorization);
         newsRepository.deleteById(id);
+        commentRepository.deleteAllByNewsId(id);
+    }
 
+    private News getNewsAndCheckUser(Long id, String username, String authorization) {
+
+        News news = newsRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Check news id" + id));
+
+        String usernameFromComment = communicationService.findByUsername(username);
+
+        String usernameFromToken = communicationService.getUsernameFromToken(authorization);
+
+        if (!usernameFromComment.equals(usernameFromToken)){
+            throw new RuntimeException("User with username " + usernameFromToken + " can't edit/delete this information");
+        }
+        return news;
     }
 }
