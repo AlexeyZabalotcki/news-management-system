@@ -34,4 +34,5 @@ public class News {
     private String title;
     private String text;
     private LocalDateTime time;
+    private String username;
 }

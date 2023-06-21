@@ -1,13 +1,11 @@
 package ru.clevertec.gateway_service.security;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import ru.clevertec.gateway_service.dto.User;
+import ru.clevertec.gateway_service.user_ms.User;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -20,7 +18,7 @@ public class JwtUser implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name()));
+        return Collections.singletonList(new SimpleGrantedAuthority(user.getRole()));
     }
 
     @Override

@@ -2,6 +2,7 @@ package ru.clevertec.gateway_service.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SecurityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,7 +56,6 @@ public class JwtTokenProvider {
 
     private Key getSignInKey() {
         byte[] keyBytes = Base64.getDecoder().decode(jwtSecret);
-        log.info("Sign key {} ", jwtSecret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }

@@ -17,6 +17,7 @@ public class NewsMapper {
                 .title(news.getTitle())
                 .text(news.getText())
                 .time(news.getTime())
+                .username(news.getUsername())
                 .build();
     }
 
@@ -25,6 +26,7 @@ public class NewsMapper {
                 .title(dto.getTitle())
                 .text(dto.getText())
                 .time(dto.getTime())
+                .username(dto.getUsername())
                 .build();
     }
 

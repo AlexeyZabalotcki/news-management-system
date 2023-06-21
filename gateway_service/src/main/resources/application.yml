@@ -43,6 +43,18 @@ spring:
         - id: news
           uri: ${service-lb-urls.news}
           predicates:
+             - Path=/comments/**
+          filters:
+             - RewritePath=/comments(?<remaining>.*), /api/v1/comments${remaining}
+        - id: news
+          uri: ${service-lb-urls.news}
+          predicates:
+            - Path=/journalist/**
+          filters:
+             - RewritePath=/journalist(?<remaining>.*), /api/v1/journalist${remaining}
+        - id: news
+          uri: ${service-lb-urls.news}
+          predicates:
             - Path=/full/**
           filters:
             - RewritePath=/full(?<remaining>.*), /api/v1/full${remaining}

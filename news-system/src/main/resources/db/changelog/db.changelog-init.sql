@@ -11,6 +11,7 @@ CREATE TABLE news
 (
     id          BIGINT DEFAULT nextval('news_seq') PRIMARY KEY,
     title       VARCHAR(300) NOT NULL ,
+    username    VARCHAR(300) NOT NULL ,
     text        VARCHAR(150) NOT NULL,
     time        TIMESTAMP
 );
@@ -25,5 +26,5 @@ CREATE TABLE comments
     text        VARCHAR NOT NULL,
     username    VARCHAR(300) NOT NULL,
     news_id     BIGINT NOT NULL,
-    FOREIGN KEY (news_id) REFERENCES news(id)
+    CONSTRAINT fk_comments_news_id FOREIGN KEY (news_id) REFERENCES news(id) ON DELETE CASCADE
 );
