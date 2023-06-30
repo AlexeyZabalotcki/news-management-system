@@ -16,8 +16,8 @@ public class CacheFactoryImpl implements CacheFactory {
     @Value("${cache.capacity}")
     private int capacity;
 
-    @Override
-    public <K, V> Cache<K, V> createCache() {
+//    @Override
+    private <K, V> Cache<K, V> createCache() {
         switch (cacheType) {
             case "LFU":
                 return new LFUCache<>(capacity);

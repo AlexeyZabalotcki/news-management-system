@@ -111,9 +111,9 @@ public class JournalistNewsServiceImpl implements JournalistNewsService {
 
         String usernameFromToken = communicationService.getUsernameFromToken(authorization);
 
-        if (!usernameFromComment.equals(usernameFromToken)){
-            throw new RuntimeException("User with username " + usernameFromToken + " can't edit/delete this information");
+        if (usernameFromComment.equals(usernameFromToken)){
+            return news;
         }
-        return news;
+        throw new RuntimeException("User with username " + usernameFromToken + " can't edit/delete this information");
     }
 }

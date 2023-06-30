@@ -12,8 +12,8 @@ import java.util.List;
 @Repository
 public interface NewsRepository extends JpaRepository<News, Long> {
     @Query("select n from News n where n.title like ?1 or n.text like ?1")
-    List<News> findAllByWordParts(String keyword);
+    List<News> findAllByKeword(String keyword);
 
     @Query("select n from News n where n.title like ?1 or n.text like ?1")
-    Page<News> findAllByWordParts(String keyword, Pageable pageable);
+    Page<News> findAllByKeword(String keyword, Pageable pageable);
 }
