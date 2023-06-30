@@ -40,13 +40,13 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<Comment> findAllByKeyword(String key) {
         String query = "%" + key + "%";
-        return commentRepository.findAllByWordKeys(query);
+        return commentRepository.findAllByKeyword(query);
     }
 
     @Override
     public CommentPageDto findPageByKeyword(String key, Pageable pageable) {
         String query = "%" + key + "%";
-        Page<Comment> page = commentRepository.findAllByWordKeys(query, pageable);
+        Page<Comment> page = commentRepository.findAllByKeyword(query, pageable);
         return commentMapper.toPage(page);
     }
 

@@ -39,13 +39,14 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     public List<News> findAllByKeyword(String keyword) {
-        String findWord = "%" + keyword + "%";
-        return newsRepository.findAllByWordParts(findWord);    }
+        String word = "%" + keyword + "%";
+        return newsRepository.findAllByKeword(word);
+    }
 
     @Override
     public NewsPageDto findPageByKeyword(String keyword, Pageable pageable) {
         String findWord = "%" + keyword + "%";
-        Page<News> page = newsRepository.findAllByWordParts(findWord, pageable);
+        Page<News> page = newsRepository.findAllByKeword(findWord, pageable);
         return newsMapper.toNewsDto(page);
     }
 

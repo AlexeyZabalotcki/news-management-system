@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.news_service.dto.*;
 import ru.clevertec.news_service.mapper.CommentMapper;
 import ru.clevertec.news_service.mapper.NewsMapper;
-import ru.clevertec.news_service.model.Comment;
 import ru.clevertec.news_service.model.News;
 import ru.clevertec.news_service.service.CommentService;
 import ru.clevertec.news_service.service.NewsService;
@@ -16,8 +15,6 @@ import ru.clevertec.news_service.service.NewsCommentsService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -32,54 +29,41 @@ public class NewsCommentsServiceImpl implements NewsCommentsService {
     private final CommentMapper commentMapper;
 
     @Override
-    public List<NewsCommentsDto> find(String key) {
-        List<News> news = newsService.findAllByKeyword(key);
-        List<Comment> commentDtos = commentService.findAllByKeyword(key);
-
-        Set<Long> newsIds = news.stream().map(News::getId).collect(Collectors.toSet());
-        Set<Long> newsIdFromComments = commentDtos.stream()
-                .map(commentDto -> commentDto.getNews().getId()).collect(Collectors.toSet());
-
-        newsIds.addAll(newsIdFromComments);
+    public List<NewsCommentsDto> find(String keyword) {
+        List<News> newsList = newsService.findAllByKeyword(keyword);
 
         List<NewsCommentsDto> newsCommentsList = new ArrayList<>();
-        for (Long newsId : newsIds) {
-            NewsDto byId = newsService.findById(newsId);
-            List<CommentDto> comments = commentService.findAllByNewsId(newsId).stream()
-                    .map(
-                            commentDto -> CommentDto.builder()
-                                            .username(commentDto.getUsername())
-                                            .text(commentDto.getText())
-                                            .time(commentDto.getTime())
-                                            .newsId(commentDto.getNewsId())
-                                            .build())
-                    .collect(Collectors.toList());
-            NewsCommentsDto newsComments = NewsCommentsDto.builder()
-                    .news(byId)
-                    .comments(comments)
+        for (News news : newsList) {
+            NewsDto newsDto = newsMapper.toDto(news);
+            List<CommentDto> commentDtoList = commentService.findAllByNewsId(news.getId());
+
+            NewsCommentsDto newsCommentsDto = NewsCommentsDto.builder()
+                    .news(newsDto)
+                    .comments(commentDtoList)
                     .build();
-            newsCommentsList.add(newsComments);
+            newsCommentsList.add(newsCommentsDto);
         }
+
         return newsCommentsList;
     }
 
     @Override
-    public List<NewsDto> findNews(String key) {
-        return newsMapper.toDtoList(newsService.findAllByKeyword(key));
+    public List<NewsDto> findNews(String keyword) {
+        return newsMapper.toDtoList(newsService.findAllByKeyword(keyword));
     }
 
     @Override
-    public List<CommentDto> findComments(String key) {
-        return commentMapper.toDtoList(commentService.findAllByKeyword(key));
+    public List<CommentDto> findComments(String keyword) {
+        return commentMapper.toDtoList(commentService.findAllByKeyword(keyword));
     }
 
     @Override
-    public NewsPageDto findNewsPage(String key, Pageable pageable) {
-        return newsService.findPageByKeyword(key, pageable);
+    public NewsPageDto findNewsPage(String keyword, Pageable pageable) {
+        return newsService.findPageByKeyword(keyword, pageable);
     }
 
     @Override
-    public CommentPageDto findCommentPage(String key, Pageable pageable) {
-        return commentService.findPageByKeyword(key, pageable);
+    public CommentPageDto findCommentPage(String keyword, Pageable pageable) {
+        return commentService.findPageByKeyword(keyword, pageable);
     }
 }

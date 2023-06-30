@@ -1,5 +1,6 @@
 package ru.clevertec.news_service.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -17,7 +18,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CommentDto {
 
-    private Long id;
+//    private Long id;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime time;
     private String text;
     private String username;
