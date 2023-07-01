@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CommentDto {
 
-//    private Long id;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime time;
     private String text;

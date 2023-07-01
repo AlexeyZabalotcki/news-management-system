@@ -47,6 +47,5 @@ public class CommunicationService {
                 .bodyToMono(UserDto.class)
                 .block())
                 .getUsername();
-
     }
 }

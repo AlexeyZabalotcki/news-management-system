@@ -14,3 +14,17 @@ CREATE TABLE users
     password   VARCHAR      NOT NULL,
     role        VARCHAR (30) NOT NULL
 );
+
+DROP TABLE IF EXISTS refresh_tokens;
+DROP SEQUENCE IF EXISTS refresh_tokens_seq;
+
+CREATE SEQUENCE refresh_tokens_seq start 1 increment 1;
+
+CREATE TABLE refresh_tokens
+(
+    id              BIGINT DEFAULT nextval('refresh_tokens_seq') PRIMARY KEY,
+    token           VARCHAR(255) NOT NULL UNIQUE,
+    expiration_time TIMESTAMP,
+    user_id         BIGINT REFERENCES users(id) ON DELETE CASCADE
+);
+

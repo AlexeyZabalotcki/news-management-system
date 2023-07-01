@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import ru.clevertec.gateway_service.user_ms.User;
+import ru.clevertec.gateway_service.dto.user.User;
 
 import java.util.Collection;
 import java.util.Collections;
