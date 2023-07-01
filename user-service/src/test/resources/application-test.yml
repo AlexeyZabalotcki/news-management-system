@@ -7,5 +7,3 @@ spring:
     password: "test"
     change-log: db/changelog/db.changelog-master.yaml
     enabled: true
-  kafka:
-    bootstrapServers: localhost:9092
