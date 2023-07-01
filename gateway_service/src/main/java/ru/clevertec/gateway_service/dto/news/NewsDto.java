@@ -1,6 +1,7 @@
-package ru.clevertec.news_service.dto;
+package ru.clevertec.gateway_service.dto.news;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -16,11 +17,18 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentDto {
+public class NewsDto {
 
+    @Schema(description = "News title", example = "Amazing title")
+    private String title;
+
+    @Schema(description = "News text", example = "Amazing text")
+    private String text;
+
+    @Schema(description = "News publication time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime time;
-    private String text;
+
+    @Schema(description = "Username", example = "journalist")
     private String username;
-    private Long newsId;
 }

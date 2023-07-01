@@ -41,11 +41,12 @@ public class UserServiceImpl implements UserService {
     private final JwtService jwtService;
 
     @Override
+    @Transactional
     public AuthenticationResponseDto register(RegisterDto request) {
         User user = getUser(request);
         String username = user.getUsername();
         if (userRepository.findByUsername(username).isPresent()) {
-            throw new DataIntegrityViolationException("Username or email already exists");
+            throw new IllegalArgumentException("Username already exists");
         }
         userRepository.save(user);
         var jwtAccessToken = jwtService.generateAccessToken(user);
@@ -91,11 +92,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDto save(Role role, InputUserDto user) {
+    public UserDto save(InputUserDto user) {
         User entity = mapper.userToEntity(user);
-        entity.setPassword(passwordEncoder.encode(user.getPassword()));
-        entity.setRole(role);
-        return mapper.userToDto(userRepository.save(entity));
+        if (isValidRole(entity.getRole())) {
+            entity.setPassword(passwordEncoder.encode(user.getPassword()));
+            User saved = userRepository.save(entity);
+            return mapper.userToDto(saved);
+        }
+        throw new InvalidRoleException("Invalid user role specified. Please choose a valid role: "
+                + Arrays.toString(Role.values()));
     }
 
     @Override

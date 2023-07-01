@@ -34,25 +34,25 @@ spring:
             - Path=/news/**
           filters:
             - RewritePath=/news(?<remaining>.*), /api/v1/news${remaining}
-        - id: news
+        - id: comment
           uri: ${service-lb-urls.news}
           predicates:
             - Path=/comment/**
           filters:
             - RewritePath=/comment(?<remaining>.*), /api/v1/comment${remaining}
-        - id: news
+        - id: comments
           uri: ${service-lb-urls.news}
           predicates:
              - Path=/comments/**
           filters:
              - RewritePath=/comments(?<remaining>.*), /api/v1/comments${remaining}
-        - id: news
+        - id: journalist
           uri: ${service-lb-urls.news}
           predicates:
             - Path=/journalist/**
           filters:
              - RewritePath=/journalist(?<remaining>.*), /api/v1/journalist${remaining}
-        - id: news
+        - id: full
           uri: ${service-lb-urls.news}
           predicates:
             - Path=/full/**
