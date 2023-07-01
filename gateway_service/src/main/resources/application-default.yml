@@ -1,0 +1,6 @@
+logging:
+  level:
+    root: info
+    org.springframework.web: debug
+    ru.clevertec.gateway_service: debug
+    org.springframework.security: debug

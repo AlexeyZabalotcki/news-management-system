@@ -3,7 +3,7 @@ version: '3.5'
 services:
 
   discovery-server-service:
-    image: aviasales-eureka-server:latest
+    image: eureka-server:latest
     build: eureka_server
     container_name: discovery-server-service
     ports:
@@ -15,7 +15,7 @@ services:
       retries: 10
 
   gateway-service:
-    image: aviasales-gateway-service:latest
+    image: gateway-service:latest
     build: gateway_service
     container_name: gateway-service
     ports:
@@ -27,7 +27,7 @@ services:
         condition: service_healthy
 
   users-service:
-    image: aviasales-user-service:latest
+    image: user-service:latest
     container_name: users-service
     depends_on:
       discovery-server-service:
@@ -51,3 +51,37 @@ services:
     ports:
       - "5432:5432"
     restart: unless-stopped
+
+  news-service:
+    image: news-service:latest
+    container_name: news-service
+    depends_on:
+      discovery-server-service:
+        condition: service_healthy
+      news-database:
+        condition: service_started
+    build: news-system
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://news-database:5432/news_db
+      SPRING_DATASOURCE_USERNAME: news
+      SPRING_DATASOURCE_PASSWORD: password
+      eureka.client.serviceUrl.defaultZone: http://discovery-server-service:8761/eureka/
+
+  news-database:
+    container_name: news-database
+    image: postgres
+    environment:
+      POSTGRES_USER: news
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: news_db
+    ports:
+      - "5433:5432"
+    restart: unless-stopped
+
+  cache:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
