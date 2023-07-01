@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    username: test
+    password: test
+  liquibase:
+    user: "test"
+    password: "test"
+    change-log: db/changelog/db.changelog-master.yaml
+    enabled: true
+  kafka:
+    bootstrapServers: localhost:9092

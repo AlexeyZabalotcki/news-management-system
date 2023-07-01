@@ -19,7 +19,18 @@ Technologies:
 Implemented:
 * `LRU, LFU caches`
 * `Tests using Mockito and Testcontainers`
+___
+# __Project setup steps__
+___
+* ```git clone <username>/news-management-system.git ```
+* go to the folder ```cd 'your project folder'```
+* paste project url from the first step
+* open the project in your IDE ```File->Open->'your project folder'```
 
+# __To ```run``` application you need:__
+
+* open folder with project in the terminal ```cd 'your project folder'```
+* run command ```docker compose up -d --build```
 ## Endpoints for All (ADMIN, JOURNALIST, SUBSCRIBER):
 
 * #### Authenticate endpoint `POST http://localhost:8080/authenticate/auth`
